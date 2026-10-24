@@ -1,6 +1,10 @@
 node_modules/
 out/
-release/
+release/*
+!release/*.exe
+!release/*.blockmap
+!release/*.yml
+!release/*.yaml
 dist/
 coverage/
 test-results/

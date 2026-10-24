@@ -1,0 +1,43 @@
+directories:
+  output: release
+  buildResources: resources
+appId: com.memofloat.app
+productName: MemoFloat
+copyright: Copyright (c) 2026 MemoFloat
+files:
+  - filter:
+      - out/**
+      - package.json
+      - '!**/*.map'
+extraResources:
+  - from: resources/icons
+    to: icons
+    filter:
+      - icon.png
+      - tray*.png
+npmRebuild: false
+nodeGypRebuild: false
+asar: true
+asarUnpack:
+  - '**/node_modules/better-sqlite3/prebuilds/**'
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: resources/icons/icon.ico
+  artifactName: MemoFloat-Setup-${version}-x64.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: MemoFloat
+  uninstallDisplayName: MemoFloat
+  installerIcon: resources/icons/icon.ico
+  uninstallerIcon: resources/icons/icon.ico
+  deleteAppDataOnUninstall: false
+  include: resources/installer.nsh
+electronVersion: 44.7.2
