@@ -1,0 +1,52 @@
+appId: com.memofloat.app
+productName: MemoFloat
+copyright: Copyright (c) 2026 MemoFloat
+directories:
+  output: release
+  buildResources: resources
+
+files:
+  - out/**
+  - package.json
+  - '!**/*.map'
+
+# better-sqlite3 ships N-API prebuilt binaries (ABI-stable across Node and Electron), so no
+# native rebuild is required or wanted. The .node binary must live outside the asar archive.
+extraResources:
+  - from: resources/icons
+    to: icons
+    filter:
+      - icon.png
+      - tray*.png
+
+npmRebuild: false
+nodeGypRebuild: false
+asar: true
+asarUnpack:
+  - '**/node_modules/better-sqlite3/prebuilds/**'
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  icon: resources/icons/icon.ico
+  artifactName: MemoFloat-Setup-${version}-x64.${ext}
+  # Unsigned unless CSC_LINK / CSC_KEY_PASSWORD (or Azure Trusted Signing settings) are provided.
+  # See README "Code signing".
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowElevation: true
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: MemoFloat
+  uninstallDisplayName: MemoFloat
+  installerIcon: resources/icons/icon.ico
+  uninstallerIcon: resources/icons/icon.ico
+  # User data (%APPDATA%\MemoFloat) is never touched by installs or upgrades. On a manual
+  # uninstall the user is asked explicitly (default: keep) - see resources/installer.nsh.
+  deleteAppDataOnUninstall: false
+  include: resources/installer.nsh
