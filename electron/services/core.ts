@@ -1,6 +1,7 @@
 import { NotesRepository } from '../repositories/notes-repository'
 import { RemindersRepository } from '../repositories/reminders-repository'
 import { SettingsRepository } from '../repositories/settings-repository'
+import { TimetableRepository } from '../repositories/timetable-repository'
 import { WindowStateRepository } from '../repositories/window-state-repository'
 import { BackupService } from './backup-service'
 import type { Db } from './database'
@@ -8,6 +9,7 @@ import { EventBus, systemClock, type Clock } from './events'
 import { nullLogger, type Logger } from './logger'
 import { NoteService } from './note-service'
 import { ReminderService, type Notifier, type TimerApi } from './reminder-service'
+import { TimetableService } from './timetable-service'
 
 export interface CoreOptions {
   db: Db
@@ -32,6 +34,7 @@ export function createCore(options: CoreOptions) {
   const reminders = new RemindersRepository(options.db)
   const settings = new SettingsRepository(options.db, logger)
   const windowStates = new WindowStateRepository(options.db)
+  const timetables = new TimetableRepository(options.db)
 
   const noteService = new NoteService({ notes, settings, events, clock, timeZone: options.timeZone })
   const reminderService = new ReminderService({
@@ -44,6 +47,15 @@ export function createCore(options: CoreOptions) {
     timeZone: options.timeZone,
     timers: options.timers,
     notificationsEnabled: () => settings.getValue('notificationsEnabled')
+  })
+  const timetableService = new TimetableService({
+    repo: timetables,
+    events,
+    clock,
+    notifier: options.notifier,
+    logger,
+    timeZone: options.timeZone,
+    timers: options.timers
   })
   const backupService = new BackupService({
     db: options.db,
@@ -60,9 +72,10 @@ export function createCore(options: CoreOptions) {
     clock,
     logger,
     events,
-    repos: { notes, reminders, settings, windowStates },
+    repos: { notes, reminders, settings, windowStates, timetables },
     notes: noteService,
     reminders: reminderService,
+    timetable: timetableService,
     backup: backupService
   }
 }

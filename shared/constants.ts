@@ -63,9 +63,9 @@ export const DOCK_WINDOW = {
   collapsedHeight: 260,
   /** Width taken by the tab column (tabs and the + button) at the right edge. */
   tabsWidth: 72,
-  /** Open state: room for drawer stack and expanded note card. Transparent parts let clicks through. */
-  openWidth: 540,
-  maxHeight: 740,
+  /** Open state: room for drawer stack, expanded note card, and timetable panel + popup. Transparent parts let clicks through. */
+  openWidth: 680,
+  maxHeight: 780,
   maxTabs: 8,
   maxMarkers: 8
 } as const
@@ -100,3 +100,37 @@ export const DEFAULT_SHORTCUTS: Record<ShortcutAction, string> = {
 
 export const EXPORT_FORMAT = 'memofloat-export'
 export const EXPORT_VERSION = 1
+
+export const TIMETABLE_STYLES = ['edge', 'compact'] as const
+export type TimetableStyle = (typeof TIMETABLE_STYLES)[number]
+
+export const TIMETABLE_VIEWS = ['day', 'week', 'month'] as const
+export type TimetableView = (typeof TIMETABLE_VIEWS)[number]
+
+export const EVENT_RECURRENCES = ['none', 'daily', 'weekly', 'monthly'] as const
+export type EventRecurrence = (typeof EVENT_RECURRENCES)[number]
+
+export const EVENT_CATEGORIES = [
+  'General',
+  'Lecture',
+  'Class',
+  'Work',
+  'Study',
+  'Meeting',
+  'Personal',
+  'Routine',
+  'Break'
+] as const
+export type EventCategory = (typeof EVENT_CATEGORIES)[number]
+
+export const CATEGORY_COLORS: Record<string, NoteColor> = {
+  General: 'sky',
+  Lecture: 'lavender',
+  Class: 'yellow',
+  Work: 'mint',
+  Study: 'pink',
+  Meeting: 'cream',
+  Personal: 'pink',
+  Routine: 'mint',
+  Break: 'yellow'
+}

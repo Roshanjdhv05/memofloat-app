@@ -5,6 +5,7 @@ export interface CoreEvents {
   'note:upserted': { note: Note; created: boolean }
   'note:deleted': { noteId: string }
   'reminders:changed': { noteId: string | null }
+  'timetable:changed': { timetableId: string | null }
   /** Bulk change (import): every view must reload. */
   'data:imported': Record<string, never>
   'settings:changed': { settings: Settings; previous: Settings }

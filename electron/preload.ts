@@ -25,6 +25,21 @@ const api: MemoFloatApi = {
     tags: () => invoke(CHANNELS.notes.tags),
     stats: () => invoke(CHANNELS.notes.stats)
   },
+  timetable: {
+    list: () => invoke(CHANNELS.timetable.list),
+    get: (id) => invoke(CHANNELS.timetable.get, { id }),
+    getActive: () => invoke(CHANNELS.timetable.getActive),
+    setActive: (id) => invoke(CHANNELS.timetable.setActive, { id }),
+    create: (input) => invoke(CHANNELS.timetable.create, input),
+    update: (id, patch) => invoke(CHANNELS.timetable.update, { id, patch }),
+    duplicate: (id) => invoke(CHANNELS.timetable.duplicate, { id }),
+    remove: (id) => invoke(CHANNELS.timetable.remove, { id }),
+    listEvents: (query) => invoke(CHANNELS.timetable.listEvents, query),
+    getEvent: (id) => invoke(CHANNELS.timetable.getEvent, { id }),
+    createEvent: (input) => invoke(CHANNELS.timetable.createEvent, input),
+    updateEvent: (id, patch) => invoke(CHANNELS.timetable.updateEvent, { id, patch }),
+    removeEvent: (id) => invoke(CHANNELS.timetable.removeEvent, { id })
+  },
   reminders: {
     list: (query) => invoke(CHANNELS.reminders.list, query ?? {}),
     forNote: (noteId) => invoke(CHANNELS.reminders.forNote, { noteId }),

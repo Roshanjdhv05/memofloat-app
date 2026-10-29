@@ -11,6 +11,21 @@ export const CHANNELS = {
     tags: 'notes:tags',
     stats: 'notes:stats'
   },
+  timetable: {
+    list: 'timetable:list',
+    get: 'timetable:get',
+    getActive: 'timetable:get-active',
+    setActive: 'timetable:set-active',
+    create: 'timetable:create',
+    update: 'timetable:update',
+    duplicate: 'timetable:duplicate',
+    remove: 'timetable:remove',
+    listEvents: 'timetable:events:list',
+    getEvent: 'timetable:events:get',
+    createEvent: 'timetable:events:create',
+    updateEvent: 'timetable:events:update',
+    removeEvent: 'timetable:events:remove'
+  },
   reminders: {
     list: 'reminders:list',
     forNote: 'reminders:for-note',
@@ -60,6 +75,7 @@ export const CHANNELS = {
 export const EVENT_CHANNELS: readonly EventName[] = [
   'notes:changed',
   'reminders:changed',
+  'timetable:changed',
   'settings:changed',
   'window:state',
   'app:state',

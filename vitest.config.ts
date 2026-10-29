@@ -25,6 +25,7 @@ export default defineConfig({
         test: {
           name: 'renderer',
           environment: 'jsdom',
+          pool: 'threads',
           include: ['tests/unit/renderer/**/*.test.{ts,tsx}'],
           setupFiles: ['tests/setup-renderer.ts']
         }

@@ -57,7 +57,7 @@ describe('PaperBloomDockApp', () => {
     const collapsedTab = document.querySelector('[data-dock-hit="tab"]') as HTMLElement
     await userEvent.click(collapsedTab)
 
-    const petal = await screen.findByText('Project Plan')
+    const petal = await screen.findByTitle('Open "Project Plan"')
     await userEvent.click(petal)
 
     expect(fake.api.windows.openNote).toHaveBeenCalledWith('n1')

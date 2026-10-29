@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion'
 import sidebarLogo from '../../assets/sidebar-logo.png'
-import { Archive, BellRing, CalendarDays, EyeOff, Focus, Pin, Settings, StickyNote, Type } from 'lucide-react'
+import { Archive, BellRing, Calendar, CalendarDays, EyeOff, Focus, Pin, Settings, StickyNote, Type } from 'lucide-react'
 import { type ComponentType, useState, useEffect } from 'react'
 import type { AppStats } from '@shared/types'
 import { useToast } from '../../components/Toast'
@@ -8,12 +8,13 @@ import { useAppState } from '../../hooks/useAppState'
 import { api, messageOf, unwrap } from '../../lib/api'
 import { FONT_STORAGE_KEY, applyFontFamily, getStoredFontId, getFontById } from '../../lib/fonts'
 
-export type Section = 'all' | 'pinned' | 'today' | 'reminders' | 'archived' | 'fonts' | 'settings'
+export type Section = 'all' | 'pinned' | 'today' | 'timetable' | 'reminders' | 'archived' | 'fonts' | 'settings'
 
 const ITEMS: Array<{ id: Section; label: string; icon: ComponentType<{ className?: string; 'aria-hidden'?: boolean }>; count?: (s: AppStats) => number }> = [
   { id: 'all', label: 'All notes', icon: StickyNote, count: (s) => s.all },
   { id: 'pinned', label: 'Pinned', icon: Pin, count: (s) => s.pinned },
   { id: 'today', label: 'Today', icon: CalendarDays, count: (s) => s.today },
+  { id: 'timetable', label: 'Timetable', icon: Calendar },
   { id: 'reminders', label: 'Upcoming reminders', icon: BellRing, count: (s) => s.reminders },
   { id: 'archived', label: 'Archived', icon: Archive, count: (s) => s.archived },
   { id: 'fonts', label: 'Fonts', icon: Type },

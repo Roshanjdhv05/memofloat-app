@@ -1,4 +1,5 @@
 import { initialMigration } from './001_initial'
+import { timetableMigration } from './002_timetable'
 
 export interface Migration {
   /** Strictly increasing integer; never renumber a released migration. */
@@ -12,4 +13,4 @@ export interface Migration {
  * Ordered list of every schema migration. To evolve the schema add a new file
  * (002_something.ts) and append it here; never edit a migration that has shipped.
  */
-export const migrations: readonly Migration[] = [initialMigration]
+export const migrations: readonly Migration[] = [initialMigration, timetableMigration]

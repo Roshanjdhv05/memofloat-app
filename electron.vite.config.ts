@@ -4,6 +4,9 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import type { Plugin } from 'vite'
 
+// Prevent ELECTRON_RUN_AS_NODE (inherited from IDE terminals) from making Electron launch in Node mode
+delete process.env.ELECTRON_RUN_AS_NODE
+
 const alias = {
   '@shared': resolve('shared')
 }

@@ -5,6 +5,7 @@ release/*
 !release/*.blockmap
 !release/*.yml
 !release/*.yaml
+!release/*.msix
 dist/
 coverage/
 test-results/

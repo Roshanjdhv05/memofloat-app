@@ -215,6 +215,7 @@ async function main(): Promise<void> {
     windows.discardNote(noteId)
   })
   core.events.on('reminders:changed', ({ noteId }) => windows.broadcast('reminders:changed', { noteId }))
+  core.events.on('timetable:changed', ({ timetableId }) => windows.broadcast('timetable:changed', { timetableId }))
   core.events.on('data:imported', () => windows.broadcast('notes:changed', { kind: 'reset', noteId: null, revision: null }))
   core.events.on('settings:changed', ({ settings, previous }) => {
     applySettings(settings, previous)
@@ -248,6 +249,8 @@ async function main(): Promise<void> {
 
   // Reminders: reconcile everything that came due while the app was closed, then keep the timer armed.
   core.reminders.start()
+  // Timetable reminder polling: starts here (not in constructor) so tests aren't affected.
+  core.timetable.startReminderPolling()
   powerMonitor.on('resume', () => core.reminders.onSystemResume())
   powerMonitor.on('unlock-screen', () => core.reminders.onSystemResume())
 
@@ -277,6 +280,7 @@ async function shutdown(core: Core, windows: WindowManager, shortcuts: ShortcutS
     logger.error('Flushing note windows failed', { error })
   }
   core.reminders.stop()
+  core.timetable.dispose()
   shortcuts.unregisterAll()
   dock.destroy()
   tray.destroy()

@@ -22,7 +22,7 @@ export function makeNote(over: Partial<Note> = {}): Note {
 }
 
 /** A controllable stand-in for `window.memofloat` (the preload bridge). */
-export function installFakeApi(overrides: { [K in 'notes' | 'reminders' | 'windows' | 'settings' | 'data' | 'app']?: Record<string, unknown> } = {}) {
+export function installFakeApi(overrides: { [K in 'notes' | 'reminders' | 'timetable' | 'windows' | 'settings' | 'data' | 'app']?: Record<string, unknown> } = {}) {
   const handlers = new Map<string, Set<(payload: never) => void>>()
   const api = {
     notes: {
@@ -33,6 +33,21 @@ export function installFakeApi(overrides: { [K in 'notes' | 'reminders' | 'windo
       remove: vi.fn(async () => ok({ deleted: true as const })),
       tags: vi.fn(async () => ok([])),
       stats: vi.fn(async () => ok({ all: 0, pinned: 0, today: 0, archived: 0, reminders: 0, overdue: 0 }))
+    },
+    timetable: {
+      list: vi.fn(async () => ok([])),
+      get: vi.fn(),
+      getActive: vi.fn(async () => ok(null)),
+      setActive: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      duplicate: vi.fn(),
+      remove: vi.fn(async () => ok({ deleted: true as const })),
+      listEvents: vi.fn(async () => ok([])),
+      getEvent: vi.fn(),
+      createEvent: vi.fn(),
+      updateEvent: vi.fn(),
+      removeEvent: vi.fn(async () => ok({ deleted: true as const }))
     },
     reminders: {
       list: vi.fn(async () => ok([])),
@@ -109,7 +124,7 @@ export function installFakeApi(overrides: { [K in 'notes' | 'reminders' | 'windo
       return () => set!.delete(handler as never)
     })
   }
-  for (const key of ['notes', 'reminders', 'windows', 'settings', 'data', 'app', 'dock'] as const) Object.assign(api[key], overrides[key as keyof typeof overrides] ?? {})
+  for (const key of ['notes', 'reminders', 'timetable', 'windows', 'settings', 'data', 'app', 'dock'] as const) Object.assign(api[key], overrides[key as keyof typeof overrides] ?? {})
   window.memofloat = api as unknown as MemoFloatApi
   return {
     api,

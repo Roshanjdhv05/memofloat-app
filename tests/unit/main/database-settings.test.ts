@@ -36,15 +36,17 @@ describe('migrations', () => {
   it('applies a later migration to an existing database and keeps its data', () => {
     const db = openDatabase(':memory:')
     db.prepare("INSERT INTO notes (id, title, created_at, updated_at) VALUES ('n','keep me','a','a')").run()
-    const next = [...migrations, { id: 2, name: 'add-column', sql: 'ALTER TABLE notes ADD COLUMN extra TEXT' }]
-    expect(migrateDatabase(db, { migrations: next }).applied).toEqual([2])
+    const nextId = migrations.length + 1
+    const next = [...migrations, { id: nextId, name: 'add-column', sql: 'ALTER TABLE notes ADD COLUMN extra TEXT' }]
+    expect(migrateDatabase(db, { migrations: next }).applied).toEqual([nextId])
     expect(db.prepare("SELECT title FROM notes WHERE id = 'n'").pluck().get()).toBe('keep me')
     db.close()
   })
 
   it('rolls a failing migration back completely', () => {
     const db = openDatabase(':memory:')
-    const bad = [...migrations, { id: 2, name: 'bad', sql: 'CREATE TABLE t(a); INSERT INTO nope VALUES (1);' }]
+    const nextId = migrations.length + 1
+    const bad = [...migrations, { id: nextId, name: 'bad', sql: 'CREATE TABLE t(a); INSERT INTO nope VALUES (1);' }]
     expect(() => migrateDatabase(db, { migrations: bad })).toThrow()
     expect(db.prepare("SELECT COUNT(*) FROM sqlite_master WHERE name = 't'").pluck().get()).toBe(0)
     db.close()
@@ -64,7 +66,8 @@ describe('migrations', () => {
       const file = join(h.dir, 'memofloat.db')
       const db = new Database(file)
       db.pragma('journal_mode = WAL')
-      const next = [...migrations, { id: 2, name: 'x', sql: 'CREATE TABLE extra_table(a)' }]
+      const nextId = migrations.length + 1
+      const next = [...migrations, { id: nextId, name: 'x', sql: 'CREATE TABLE extra_table(a)' }]
       migrateDatabase(db, { migrations: next, file, backupDir: join(h.dir, 'mig') })
       db.close()
       expect(readdirSync(join(h.dir, 'mig')).some((f) => f.startsWith('pre-migration-'))).toBe(true)

@@ -10,6 +10,7 @@ import { NotesView, type LayoutMode, type NotesSection, type SortMode } from './
 import { RemindersView } from './RemindersView'
 import { SettingsView } from './SettingsView'
 import { FontsView } from './FontsView'
+import { TimetableView } from './TimetableView'
 import { Sidebar, type Section } from './Sidebar'
 
 const LAYOUT_KEY = 'memofloat.layout'
@@ -27,7 +28,13 @@ function writePref(key: string, value: string) {
   try { localStorage.setItem(key, value) } catch { /* storage may be unavailable */ }
 }
 
-const ROUTE_TO_SECTION: Record<DashboardRoute, Section> = { notes: 'all', reminders: 'reminders', settings: 'settings' }
+const ROUTE_TO_SECTION: Record<DashboardRoute, Section> = {
+  notes: 'all',
+  reminders: 'reminders',
+  settings: 'settings',
+  timetable: 'timetable',
+  fonts: 'fonts'
+}
 
 export function DashboardApp() {
   const toast = useToast()
@@ -45,7 +52,7 @@ export function DashboardApp() {
   }, [toast])
 
   const focusSearch = useCallback(() => {
-    setSection((s) => (s === 'reminders' || s === 'settings' || s === 'fonts' ? 'all' : s))
+    setSection((s) => (s === 'reminders' || s === 'settings' || s === 'fonts' || s === 'timetable' ? 'all' : s))
     requestAnimationFrame(() => { searchRef.current?.focus(); searchRef.current?.select() })
   }, [])
 
@@ -67,8 +74,8 @@ export function DashboardApp() {
     return () => window.removeEventListener('keydown', onKey)
   }, [focusSearch, newNote])
 
-  const select = (next: Section) => { setSection(next); if (next === 'reminders' || next === 'settings' || next === 'fonts') setSearch('') }
-  const showNotes = section !== 'reminders' && section !== 'settings' && section !== 'fonts'
+  const select = (next: Section) => { setSection(next); if (next === 'reminders' || next === 'settings' || next === 'fonts' || next === 'timetable') setSearch('') }
+  const showNotes = section !== 'reminders' && section !== 'settings' && section !== 'fonts' && section !== 'timetable'
   const active = stats.data ? stats.data.all : undefined
 
   return (
@@ -99,6 +106,8 @@ export function DashboardApp() {
             >
               {showNotes ? (
                 <NotesView section={section as NotesSection} search={search} sort={sort} layout={layout} quickCreateSignal={quickSignal} onClearSearch={() => setSearch('')} />
+              ) : section === 'timetable' ? (
+                <TimetableView />
               ) : section === 'reminders' ? (
                 <RemindersView />
               ) : section === 'fonts' ? (

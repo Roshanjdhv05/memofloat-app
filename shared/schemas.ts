@@ -1,5 +1,14 @@
 import { z } from 'zod'
-import { DEFAULT_SHORTCUTS, EXPORT_FORMAT, EXPORT_VERSION, LIMITS, NOTE_COLORS } from './constants'
+import {
+  DEFAULT_SHORTCUTS,
+  EVENT_RECURRENCES,
+  EXPORT_FORMAT,
+  EXPORT_VERSION,
+  LIMITS,
+  NOTE_COLORS,
+  TIMETABLE_STYLES,
+  TIMETABLE_VIEWS
+} from './constants'
 import { normalizeAccelerator } from './accelerator'
 
 /* ------------------------------------------------------------------ primitives */
@@ -238,6 +247,81 @@ export type ExportedNote = z.infer<typeof exportedNoteSchema>
 export type ExportedReminder = z.infer<typeof exportedReminderSchema>
 export type ExportFile = z.infer<typeof exportFileSchema>
 
+/* ------------------------------------------------------------------ timetable */
+
+export const dateSchema = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])$/, 'date must be YYYY-MM-DD')
+export const timeSchema = z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, 'time must be HH:mm')
+export const timetableStyleSchema = z.enum(TIMETABLE_STYLES)
+export const timetableViewSchema = z.enum(TIMETABLE_VIEWS)
+export const eventRecurrenceSchema = z.enum(EVENT_RECURRENCES)
+
+export const timetableIdArgSchema = z.strictObject({ id: idSchema })
+export const timetableEventIdArgSchema = z.strictObject({ id: idSchema })
+
+export const timetableCreateSchema = z.strictObject({
+  name: z.string().trim().min(1, 'Name is required').max(100),
+  description: z.string().max(500).default(''),
+  displayStyle: timetableStyleSchema.default('edge'),
+  defaultView: timetableViewSchema.default('day'),
+  scheduleStart: timeSchema.default('08:00'),
+  scheduleEnd: timeSchema.default('18:00'),
+  color: noteColorSchema.default('sky'),
+  isActive: z.boolean().default(false)
+})
+
+export const timetablePatchSchema = z.strictObject({
+  name: z.string().trim().min(1).max(100).optional(),
+  description: z.string().max(500).optional(),
+  displayStyle: timetableStyleSchema.optional(),
+  defaultView: timetableViewSchema.optional(),
+  scheduleStart: timeSchema.optional(),
+  scheduleEnd: timeSchema.optional(),
+  color: noteColorSchema.optional(),
+  isActive: z.boolean().optional()
+}).refine((p) => Object.keys(p).length > 0, 'at least one field to update')
+
+export const timetableUpdateSchema = z.strictObject({
+  id: idSchema,
+  patch: timetablePatchSchema
+})
+
+export const timetableEventQuerySchema = z.strictObject({
+  timetableId: idSchema,
+  date: dateSchema.optional(),
+  startDate: dateSchema.optional(),
+  endDate: dateSchema.optional()
+})
+
+export const timetableEventCreateSchema = z.strictObject({
+  timetableId: idSchema,
+  title: z.string().trim().min(1, 'Title is required').max(200),
+  description: z.string().max(1000).default(''),
+  date: dateSchema,
+  startTime: timeSchema,
+  endTime: timeSchema,
+  color: noteColorSchema.default('sky'),
+  category: z.string().max(50).default('General'),
+  recurrence: eventRecurrenceSchema.default('none'),
+  reminderMinutes: z.number().int().min(0).max(1440).nullable().default(null)
+})
+
+export const timetableEventPatchSchema = z.strictObject({
+  title: z.string().trim().min(1).max(200).optional(),
+  description: z.string().max(1000).optional(),
+  date: dateSchema.optional(),
+  startTime: timeSchema.optional(),
+  endTime: timeSchema.optional(),
+  color: noteColorSchema.optional(),
+  category: z.string().max(50).optional(),
+  recurrence: eventRecurrenceSchema.optional(),
+  reminderMinutes: z.number().int().min(0).max(1440).nullable().optional()
+}).refine((p) => Object.keys(p).length > 0, 'at least one field to update')
+
+export const timetableEventUpdateSchema = z.strictObject({
+  id: idSchema,
+  patch: timetableEventPatchSchema
+})
+
 /* ------------------------------------------------------------------ inferred input types */
 
 export type NoteCreateInput = z.input<typeof noteCreateSchema>
@@ -248,3 +332,8 @@ export type ReminderUpdateInput = z.input<typeof reminderUpdateSchema>
 export type ReminderListInput = z.input<typeof reminderListSchema>
 export type SettingsPatch = z.input<typeof settingsPatchSchema>
 export type ImportStrategy = z.infer<typeof importCommitSchema>['strategy']
+
+export type TimetableCreateSchemaInput = z.input<typeof timetableCreateSchema>
+export type TimetablePatchSchemaInput = z.input<typeof timetablePatchSchema>
+export type TimetableEventCreateSchemaInput = z.input<typeof timetableEventCreateSchema>
+export type TimetableEventPatchSchemaInput = z.input<typeof timetableEventPatchSchema>

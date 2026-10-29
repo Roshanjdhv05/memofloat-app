@@ -81,13 +81,11 @@ export class DockWindow {
 
   private bounds() {
     const { workArea } = screen.getPrimaryDisplay()
-    const full = Math.min(DOCK_WINDOW.maxHeight, Math.max(160, workArea.height - 40))
-    // The resting sliver only needs room for the markers, so it blocks as little of the screen edge as possible.
-    const height = this.mode === 'collapsed' ? Math.min(full, DOCK_WINDOW.collapsedHeight) : full
+    const height = Math.min(DOCK_WINDOW.maxHeight, Math.max(200, workArea.height - 44))
     const width = this.mode === 'collapsed' ? DOCK_WINDOW.collapsedWidth : DOCK_WINDOW.openWidth
     return {
       x: workArea.x + workArea.width - width,
-      y: workArea.y + Math.round((workArea.height - height) / 2),
+      y: workArea.y + 36,
       width,
       height
     }

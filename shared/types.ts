@@ -1,4 +1,5 @@
-import type { NoteColor, ShortcutAction } from './constants'
+import type { EventCategory, EventRecurrence, NoteColor, ShortcutAction, TimetableStyle, TimetableView } from './constants'
+export type { EventCategory, EventRecurrence, TimetableStyle, TimetableView }
 import type {
   ImportStrategy,
   NoteCreateInput,
@@ -106,6 +107,91 @@ export interface ReminderListItem extends Reminder {
   fired: boolean
 }
 
+export interface Timetable {
+  id: string
+  name: string
+  description: string
+  displayStyle: TimetableStyle
+  defaultView: TimetableView
+  scheduleStart: string
+  scheduleEnd: string
+  isActive: boolean
+  color: NoteColor
+  eventCount: number
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TimetableEvent {
+  id: string
+  timetableId: string
+  title: string
+  description: string
+  date: string // YYYY-MM-DD
+  startTime: string // HH:mm
+  endTime: string // HH:mm
+  color: NoteColor
+  category: string
+  recurrence: EventRecurrence
+  reminderMinutes: number | null
+  createdAt: string
+  updatedAt: string
+}
+
+export interface TimetableCreateInput {
+  name: string
+  description?: string
+  displayStyle?: TimetableStyle
+  defaultView?: TimetableView
+  scheduleStart?: string
+  scheduleEnd?: string
+  color?: NoteColor
+  isActive?: boolean
+}
+
+export interface TimetableUpdateInput {
+  name?: string
+  description?: string
+  displayStyle?: TimetableStyle
+  defaultView?: TimetableView
+  scheduleStart?: string
+  scheduleEnd?: string
+  color?: NoteColor
+  isActive?: boolean
+}
+
+export interface TimetableEventCreateInput {
+  timetableId: string
+  title: string
+  description?: string
+  date: string
+  startTime: string
+  endTime: string
+  color?: NoteColor
+  category?: string
+  recurrence?: EventRecurrence
+  reminderMinutes?: number | null
+}
+
+export interface TimetableEventUpdateInput {
+  title?: string
+  description?: string
+  date?: string
+  startTime?: string
+  endTime?: string
+  color?: NoteColor
+  category?: string
+  recurrence?: EventRecurrence
+  reminderMinutes?: number | null
+}
+
+export interface TimetableEventQuery {
+  timetableId: string
+  date?: string
+  startDate?: string
+  endDate?: string
+}
+
 export interface AppStats {
   all: number
   pinned: number
@@ -182,7 +268,7 @@ export interface ImportResult {
   backupPath: string | null
 }
 
-export type DashboardRoute = 'notes' | 'reminders' | 'settings'
+export type DashboardRoute = 'notes' | 'reminders' | 'settings' | 'timetable' | 'fonts'
 
 /* ------------------------------------------------------------------ events (main -> renderer) */
 
@@ -196,6 +282,7 @@ export interface NotesChangedEvent {
 export interface EventMap {
   'notes:changed': NotesChangedEvent
   'reminders:changed': { noteId: string | null }
+  'timetable:changed': { timetableId: string | null }
   'settings:changed': Settings
   'window:state': NoteWindowInfo
   'app:state': AppState
@@ -219,6 +306,21 @@ export interface MemoFloatApi {
     remove(id: string): Promise<ApiResult<{ deleted: true }>>
     tags(): Promise<ApiResult<TagCount[]>>
     stats(): Promise<ApiResult<AppStats>>
+  }
+  timetable: {
+    list(): Promise<ApiResult<Timetable[]>>
+    get(id: string): Promise<ApiResult<Timetable>>
+    getActive(): Promise<ApiResult<Timetable | null>>
+    setActive(id: string): Promise<ApiResult<Timetable>>
+    create(input: TimetableCreateInput): Promise<ApiResult<Timetable>>
+    update(id: string, patch: TimetableUpdateInput): Promise<ApiResult<Timetable>>
+    duplicate(id: string): Promise<ApiResult<Timetable>>
+    remove(id: string): Promise<ApiResult<{ deleted: true }>>
+    listEvents(query: TimetableEventQuery): Promise<ApiResult<TimetableEvent[]>>
+    getEvent(id: string): Promise<ApiResult<TimetableEvent>>
+    createEvent(input: TimetableEventCreateInput): Promise<ApiResult<TimetableEvent>>
+    updateEvent(id: string, patch: TimetableEventUpdateInput): Promise<ApiResult<TimetableEvent>>
+    removeEvent(id: string): Promise<ApiResult<{ deleted: true }>>
   }
   reminders: {
     list(query?: ReminderListInput): Promise<ApiResult<ReminderListItem[]>>
